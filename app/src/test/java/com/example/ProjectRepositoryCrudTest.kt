@@ -126,6 +126,19 @@ class ProjectRepositoryCrudTest {
             this.clips.value = this.clips.value.filterNot { it.id == clipId }
         }
 
+        override suspend fun shiftClipsAfter(projectId: Long, orderIndex: Int) {
+            clips.value = clips.value.map {
+                if (it.projectId == projectId && it.orderIndex > orderIndex) it.copy(orderIndex = it.orderIndex + 1) else it
+            }
+        }
+
+        override suspend fun getClipsForProject(projectId: Long): List<TimelineClipEntity> =
+            clips.value.filter { it.projectId == projectId }.sortedBy { it.orderIndex }
+
+        override suspend fun updateClipOrder(clipId: Long, orderIndex: Int) {
+            clips.value = clips.value.map { if (it.id == clipId) it.copy(orderIndex = orderIndex) else it }
+        }
+
         override suspend fun getMaxClipOrder(projectId: Long): Int =
             clips.value.filter { it.projectId == projectId }.maxOfOrNull { it.orderIndex } ?: -1
 
