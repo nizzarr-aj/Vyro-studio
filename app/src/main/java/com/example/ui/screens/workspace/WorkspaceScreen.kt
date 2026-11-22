@@ -545,6 +545,14 @@ private fun TimelineAndToolsSection(
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(stringResource(R.string.action_reset_trim))
                         }
+                        TextButton(
+                            onClick = viewModel::splitSelectedClip,
+                            enabled = selected.trimEndMs - selected.trimStartMs >= 1000L
+                        ) {
+                            Icon(Icons.Outlined.ContentCut, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Split")
+                        }
                     }
                 } else if (uiState.activePanel == WorkspaceToolPanel.SPEED) {
                     Spacer(modifier = Modifier.height(8.dp))
