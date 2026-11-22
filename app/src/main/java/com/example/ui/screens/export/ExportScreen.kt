@@ -1,6 +1,10 @@
 package com.example.ui.screens.export
 
 import android.content.Intent
+import android.content.ContentValues
+import android.os.Build
+import android.provider.MediaStore
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -50,6 +54,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.R
+import java.io.File
 import com.example.core.model.BitratePreset
 import com.example.core.model.ExportJobState
 import com.example.core.model.FrameRateOption
@@ -354,6 +359,51 @@ fun ExportScreen(
                             }
                         }
                         Spacer(modifier = Modifier.height(12.dp))
+                        OutlinedButton(
+                            onClick = {
+                                val file = File(job.outputPath)
+                                Thread {
+                                    val message = try {
+                                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                                            "Gallery save requires Android 10 or newer."
+                                        } else if (!file.exists()) {
+                                            "Exported video file was not found."
+                                        } else {
+                                            val values = ContentValues().apply {
+                                                put(MediaStore.Video.Media.DISPLAY_NAME, file.name)
+                                                put(MediaStore.Video.Media.MIME_TYPE, "video/mp4")
+                                                put(MediaStore.Video.Media.RELATIVE_PATH, "Movies/VYRO Studio")
+                                                put(MediaStore.Video.Media.IS_PENDING, 1)
+                                            }
+                                            val resolver = context.contentResolver
+                                            val uri = resolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values)
+                                                ?: throw IllegalStateException("Could not create gallery entry")
+                                            try {
+                                                resolver.openOutputStream(uri)?.use { output ->
+                                                    file.inputStream().use { input -> input.copyTo(output) }
+                                                } ?: throw IllegalStateException("Could not open gallery output")
+                                                values.clear()
+                                                values.put(MediaStore.Video.Media.IS_PENDING, 0)
+                                                resolver.update(uri, values, null, null)
+                                                "Video saved to Movies/VYRO Studio"
+                                            } catch (error: Throwable) {
+                                                resolver.delete(uri, null, null)
+                                                throw error
+                                            }
+                                        }
+                                    } catch (error: Throwable) {
+                                        error.localizedMessage ?: "Unable to save video to gallery."
+                                    }
+                                    android.os.Handler(android.os.Looper.getMainLooper()).post {
+                                        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                                    }
+                                }.start()
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text("Save to Gallery")
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
                         VyroGradientButton(
                             text = stringResource(R.string.export_share_button),
                             icon = Icons.Outlined.Share,
