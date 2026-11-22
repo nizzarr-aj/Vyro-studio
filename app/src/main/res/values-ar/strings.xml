@@ -1,0 +1,181 @@
+<resources>
+    <string name="app_name">VYRO Studio</string>
+
+    <!-- Brand & Splash -->
+    <string name="brand_vyro">VYRO</string>
+    <string name="brand_studio">STUDIO</string>
+    <string name="splash_tagline">محرك السينما المحمولة للجيل القادم</string>
+    <string name="splash_status_init">جارٍ تهيئة نواة Media3…</string>
+    <string name="splash_status_ready">المحرك جاهز</string>
+
+    <!-- Navigation -->
+    <string name="nav_dashboard">الاستوديو</string>
+    <string name="nav_templates">القوالب</string>
+    <string name="nav_effects">التأثيرات</string>
+    <string name="nav_settings">الملف الشخصي</string>
+    <string name="cd_navigate_back">رجوع</string>
+
+    <!-- Dashboard -->
+    <string name="dashboard_greeting">مرحبًا بعودتك، %1$s</string>
+    <string name="dashboard_hero_badge">محرك MEDIA3 • المرحلة الأولى</string>
+    <string name="dashboard_hero_title">اصنع سينما تنبض بالحركة</string>
+    <string name="dashboard_hero_subtitle">خط زمني متعدد المسارات بدقة عالية ومؤثرات فورية وتصدير مسرّع بالعتاد.</string>
+    <string name="action_new_project">مشروع جديد</string>
+    <string name="action_add_new_project">إضافة مشروع جديد</string>
+    <string name="action_import_media">استيراد وسائط</string>
+    <string name="action_browse_templates">القوالب</string>
+    <string name="section_recent_projects">المشاريع الأخيرة</string>
+    <string name="projects_count_format">%1$d مشاريع</string>
+    <string name="empty_projects_title">مساحة الاستوديو بانتظار إبداعك</string>
+    <string name="empty_projects_subtitle">ابدأ بخط زمني جديد، أو استورد المقاطع عبر منتقي الصور، أو اختر قالبًا سينمائيًا.</string>
+    <string name="project_clips_count">%1$d مقاطع</string>
+    <string name="project_effects_count">%1$d مؤثر</string>
+    <string name="project_fps_format">%1$d إطار/ث</string>
+    <string name="cd_project_options">خيارات المشروع</string>
+    <string name="action_open_workspace">فتح</string>
+    <string name="action_edit_name">تعديل الاسم</string>
+    <string name="action_duplicate">تكرار</string>
+    <string name="action_delete">حذف</string>
+    <string name="action_export">تصدير</string>
+    <string name="dialog_rename_title">تعديل اسم المشروع</string>
+    <string name="dialog_delete_title">حذف المشروع؟</string>
+    <string name="dialog_delete_message">سيؤدي هذا إلى إزالة «%1$s» وتكوين الخط الزمني من قاعدة البيانات المحلية.</string>
+    <string name="action_cancel">إلغاء</string>
+    <string name="action_confirm">تأكيد</string>
+    <string name="action_save">حفظ</string>
+    <string name="sort_most_recent">الأحدث</string>
+    <string name="sort_alphabetical">أبجدي (A-Z)</string>
+    <string name="cd_sort_projects">فرز المشاريع</string>
+    <string name="action_toggle_favorite">تبديل المفضلة</string>
+    <string name="filter_favorites">المفضلة</string>
+    <string name="cd_filter_favorites">تصفية حسب المفضلة</string>
+    <string name="empty_favorites_title">لا توجد مشاريع مفضلة بعد</string>
+    <string name="empty_favorites_subtitle">اختر تبديل المفضلة من قائمة أي مشروع لتثبيته هنا.</string>
+
+    <!-- New Project -->
+    <string name="new_project_title">مشروع استوديو جديد</string>
+    <string name="new_project_subtitle">اضبط أبعاد الإطار ومعدل الإطارات وملف الألوان الرئيسي.</string>
+    <string name="field_project_name">اسم المشروع</string>
+    <string name="field_project_name_hint">مثال: أضواء الليل السينمائية</string>
+    <string name="error_project_name_required">يرجى إدخال اسم المشروع للمتابعة</string>
+    <string name="section_aspect_ratio">نسبة أبعاد الإطار</string>
+    <string name="section_frame_rate">معدل الإطارات</string>
+    <string name="section_resolution">الدقة الرئيسية</string>
+    <string name="section_color_space">ملف الألوان</string>
+    <string name="action_create_and_import">إنشاء واستيراد الوسائط</string>
+    <string name="action_create_empty">إنشاء خط زمني فارغ</string>
+    <string name="aspect_9_16">9:16 عمودي</string>
+    <string name="aspect_16_9">16:9 سينمائي</string>
+    <string name="aspect_1_1">1:1 مربع</string>
+    <string name="aspect_4_5">4:5 بورتريه</string>
+    <string name="aspect_21_9">21:9 عريض</string>
+
+    <!-- Media Import -->
+    <string name="import_title">استيراد الوسائط</string>
+    <string name="import_subtitle">منتقي الوسائط الآمن من أندرويد • فيديو وصور</string>
+    <string name="import_target_project">المشروع المستهدف: %1$s</string>
+    <string name="import_filter_all">فيديو وصور</string>
+    <string name="import_filter_video">فيديو فقط</string>
+    <string name="import_filter_image">صور فقط</string>
+    <string name="import_pick_button">اختيار من الجهاز</string>
+    <string name="import_queue_title">قائمة الاستيراد (%1$d)</string>
+    <string name="import_empty_title">لا توجد وسائط محددة</string>
+    <string name="import_empty_subtitle">اضغط على اختيار من الجهاز لاستيراد مقاطع الفيديو أو الصور بأمان.</string>
+    <string name="import_commit_timeline">إضافة إلى الخط الزمني</string>
+    <string name="import_clip_video_tag">فيديو</string>
+    <string name="import_clip_image_tag">صورة</string>
+    <string name="import_move_up">تقديم</string>
+    <string name="import_move_down">تأخير</string>
+    <string name="import_remove_clip">إزالة المقطع</string>
+    <string name="default_imported_project_name">مشروع بدون عنوان</string>
+
+    <!-- Workspace -->
+    <string name="workspace_no_clips_title">الخط الزمني جاهز للوسائط</string>
+    <string name="workspace_no_clips_subtitle">استورد مقاطع فيديو أو صورًا لتفعيل المعاينة الفورية عبر Media3 ExoPlayer.</string>
+    <string name="workspace_track_video">V1 • الفيديو</string>
+    <string name="workspace_track_effects">FX • الألوان</string>
+    <string name="workspace_track_audio">A1 • الصوت</string>
+    <string name="workspace_no_effects_applied">لا توجد مؤثرات نشطة — اضغط لفتح مكتبة التأثيرات</string>
+    <string name="workspace_audio_active">الصوت الرئيسي مفعّل</string>
+    <string name="workspace_audio_muted">الصوت الرئيسي مكتوم</string>
+    <string name="workspace_selected_clip">المحدد: %1$s</string>
+    <string name="workspace_trim_in">بداية القص (-0.5ث / +0.5ث)</string>
+    <string name="workspace_trim_out">نهاية القص (-0.5ث / +0.5ث)</string>
+    <string name="workspace_speed_label">سرعة التشغيل</string>
+    <string name="tool_import">استيراد</string>
+    <string name="tool_trim">قص</string>
+    <string name="tool_speed">السرعة</string>
+    <string name="tool_effects">التأثيرات</string>
+    <string name="tool_audio">الصوت</string>
+    <string name="tool_export">تصدير</string>
+    <string name="action_play">تشغيل</string>
+    <string name="action_pause">إيقاف</string>
+    <string name="action_step_back">تراجع ثانية واحدة</string>
+    <string name="action_step_forward">تقدم ثانية واحدة</string>
+    <string name="action_delete_clip">إزالة المقطع</string>
+    <string name="action_reset_trim">إعادة ضبط القص</string>
+
+    <!-- Effects Library -->
+    <string name="effects_title">مختبر التأثيرات والألوان</string>
+    <string name="effects_subtitle">مظللات OpenGL / Media3 مسرّعة بالعتاد للمعاينة والتصدير.</string>
+    <string name="effects_search_hint">ابحث عن الفلاتر والتحويلات…</string>
+    <string name="effects_active_banner">نشط على %1$s (%2$d)</string>
+    <string name="effects_no_project_banner">اختر مشروعًا أو أنشئ واحدًا لتطبيق التأثيرات مباشرة.</string>
+    <string name="effects_cat_all">الكل</string>
+    <string name="effects_cat_color">الألوان والـ LUT</string>
+    <string name="effects_cat_tone">التباين والإضاءة</string>
+    <string name="effects_cat_optics">البصريات والإطار</string>
+    <string name="effects_apply">تطبيق</string>
+    <string name="effects_applied">مُطبّق</string>
+    <string name="effects_clear_all">مسح الكل</string>
+
+    <!-- Templates Library -->
+    <string name="templates_title">قوالب الاستوديو</string>
+    <string name="templates_subtitle">مخططات مشاريع جاهزة بأبعاد دقيقة وسلاسل ألوان Media3.</string>
+    <string name="templates_cat_all">الكل</string>
+    <string name="templates_cat_reels">ريلز وشورتس</string>
+    <string name="templates_cat_cinema">سينما</string>
+    <string name="templates_cat_editorial">تحريري</string>
+    <string name="templates_use_action">استخدام القالب</string>
+    <string name="templates_fx_included">%1$d مؤثرات مدمجة</string>
+
+    <!-- Export -->
+    <string name="export_title">تصدير النسخة الرئيسية</string>
+    <string name="export_subtitle">معالجة عتادية عبر AndroidX Media3 Transformer</string>
+    <string name="export_section_video">دفق الفيديو</string>
+    <string name="export_section_codec">الترميز ومعدل البت</string>
+    <string name="export_section_audio">هندسة الصوت</string>
+    <string name="export_include_audio">تضمين المسار الصوتي</string>
+    <string name="export_estimated_size">الحجم التقديري: ~%1$s م.ب</string>
+    <string name="export_duration_summary">مدة الخط الزمني: %1$s</string>
+    <string name="export_start_button">معالجة وتصدير MP4</string>
+    <string name="export_cancel_button">إلغاء المعالجة</string>
+    <string name="export_progress_title">جارٍ التصدير عبر Media3 Transformer…</string>
+    <string name="export_complete_title">اكتمل التصدير بنجاح</string>
+    <string name="export_complete_subtitle">تم الحفظ في ملفات التصدير (%1$s م.ب)</string>
+    <string name="export_share_button">مشاركة الفيديو</string>
+    <string name="export_error_title">توقفت عملية التصدير</string>
+    <string name="export_no_clips_warning">لا يحتوي هذا الخط الزمني على مقاطع بعد. استورد فيديو أو صورة واحدة على الأقل لتصدير MP4.</string>
+    <string name="export_import_first">استيراد وسائط أولًا</string>
+    <string name="bitrate_standard">قياسي (8 Mbps)</string>
+    <string name="bitrate_high">عالٍ (18 Mbps)</string>
+    <string name="bitrate_master">احترافي (35 Mbps)</string>
+
+    <!-- Profile & Settings -->
+    <string name="settings_title">ملف المبدع والإعدادات</string>
+    <string name="settings_studio_badge">VYRO STUDIO • المرحلة الأولى</string>
+    <string name="settings_creator_name">اسم المبدع</string>
+    <string name="settings_creator_handle">معرّف الاستوديو</string>
+    <string name="settings_save_profile">حفظ الملف</string>
+    <string name="settings_saved_feedback">تم حفظ الملف</string>
+    <string name="settings_language_title">لغة الواجهة</string>
+    <string name="settings_language_subtitle">تبديل فوري للغة ودعم كامل للاتجاه من اليمين لليسار</string>
+    <string name="settings_defaults_title">مواصفات التصدير الافتراضية</string>
+    <string name="settings_hevc_label">تفضيل ترميز H.265 (HEVC)</string>
+    <string name="settings_hevc_desc">كفاءة ضغط أعلى بدقة 4K ومعدل 60 إطارًا</string>
+    <string name="settings_storage_title">تخزين الاستوديو</string>
+    <string name="settings_storage_desc">%1$d مشاريع • %2$s م.ب من الملفات المصدّرة</string>
+    <string name="settings_clear_exports">مسح المصدّرات</string>
+    <string name="settings_engine_title">بنية محرك Media3</string>
+    <string name="settings_engine_desc">ExoPlayer + Transformer + Effect GL v1.11.1 • تخزين Room محلي</string>
+</resources>
