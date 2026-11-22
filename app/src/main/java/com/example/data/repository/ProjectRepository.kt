@@ -286,6 +286,13 @@ class ProjectRepository(
         projectDao.touchProject(clip.projectId)
     }
 
+    suspend fun moveClip(projectId: Long, clipId: Long, direction: Int): Boolean = withContext(ioDispatcher) {
+        if (direction != -1 && direction != 1) return@withContext false
+        val moved = projectDao.moveClip(projectId, clipId, direction)
+        if (moved) projectDao.touchProject(projectId)
+        moved
+    }
+
     suspend fun splitClip(projectId: Long, clipId: Long): Boolean = withContext(ioDispatcher) {
         val project = projectDao.getProjectOnce(projectId)?.toDomain() ?: return@withContext false
         val clip = project.clips.firstOrNull { it.id == clipId } ?: return@withContext false
