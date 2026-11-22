@@ -142,6 +142,20 @@ class WorkspaceViewModel(
         }
     }
 
+    fun moveSelectedClipEarlier() {
+        val clip = uiState.value.selectedClip ?: return
+        viewModelScope.launch {
+            projectRepository.moveClip(projectId, clip.id, -1)
+        }
+    }
+
+    fun moveSelectedClipLater() {
+        val clip = uiState.value.selectedClip ?: return
+        viewModelScope.launch {
+            projectRepository.moveClip(projectId, clip.id, 1)
+        }
+    }
+
     fun splitSelectedClip() {
         val project = uiState.value.project ?: return
         val clip = uiState.value.selectedClip ?: return
