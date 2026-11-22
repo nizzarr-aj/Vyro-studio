@@ -105,6 +105,9 @@ class ProjectViewModelTest {
         override suspend fun insertClips(clips: List<TimelineClipEntity>) {}
         override suspend fun updateClip(clip: TimelineClipEntity) {}
         override suspend fun deleteClipById(clipId: Long) {}
+        override suspend fun shiftClipsAfter(projectId: Long, orderIndex: Int) {}
+        override suspend fun getClipsForProject(projectId: Long): List<TimelineClipEntity> = emptyList()
+        override suspend fun updateClipOrder(clipId: Long, orderIndex: Int) {}
         override suspend fun getMaxClipOrder(projectId: Long): Int = -1
         override suspend fun insertAppliedEffects(effects: List<AppliedEffectEntity>) {}
         override suspend fun deleteAppliedEffect(projectId: Long, presetId: String) {}
