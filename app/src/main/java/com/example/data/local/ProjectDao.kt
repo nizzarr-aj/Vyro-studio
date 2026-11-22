@@ -96,6 +96,22 @@ interface ProjectDao {
     @Query("DELETE FROM timeline_clips WHERE id = :clipId")
     suspend fun deleteClipById(clipId: Long)
 
+    @Query("UPDATE timeline_clips SET orderIndex = orderIndex + 1 WHERE projectId = :projectId AND orderIndex > :orderIndex")
+    suspend fun shiftClipsAfter(projectId: Long, orderIndex: Int)
+
+    @Transaction
+    suspend fun replaceClipWithSplit(
+        projectId: Long,
+        originalClipId: Long,
+        originalOrderIndex: Int,
+        first: TimelineClipEntity,
+        second: TimelineClipEntity
+    ) {
+        shiftClipsAfter(projectId, originalOrderIndex)
+        deleteClipById(originalClipId)
+        insertClips(listOf(first, second))
+    }
+
     @Query("SELECT COALESCE(MAX(orderIndex), -1) FROM timeline_clips WHERE projectId = :projectId")
     suspend fun getMaxClipOrder(projectId: Long): Int
 
