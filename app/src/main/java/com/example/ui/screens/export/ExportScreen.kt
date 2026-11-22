@@ -76,7 +76,6 @@ import com.example.ui.theme.VyroPurpleContainer
 import com.example.ui.theme.VyroRose
 import com.example.ui.theme.VyroTextPrimary
 import com.example.ui.theme.VyroTextSecondary
-import java.io.File
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
