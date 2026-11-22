@@ -503,6 +503,24 @@ private fun TimelineAndToolsSection(
                     }
                 }
 
+                val selectedIndex = project.clips.indexOfFirst { it.id == selected.id }
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    OutlinedButton(
+                        onClick = viewModel::moveSelectedClipEarlier,
+                        enabled = selectedIndex > 0,
+                        modifier = Modifier.weight(1f)
+                    ) { Text("Move earlier") }
+                    OutlinedButton(
+                        onClick = viewModel::moveSelectedClipLater,
+                        enabled = selectedIndex >= 0 && selectedIndex < project.clips.lastIndex,
+                        modifier = Modifier.weight(1f)
+                    ) { Text("Move later") }
+                }
+
                 if (uiState.activePanel == WorkspaceToolPanel.TRIM) {
                     Spacer(modifier = Modifier.height(8.dp))
                     Row(
