@@ -503,6 +503,24 @@ private fun TimelineAndToolsSection(
                     }
                 }
 
+                val selectedIndex = project.clips.indexOfFirst { it.id == selected.id }
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    OutlinedButton(
+                        onClick = viewModel::moveSelectedClipEarlier,
+                        enabled = selectedIndex > 0,
+                        modifier = Modifier.weight(1f)
+                    ) { Text("Move earlier") }
+                    OutlinedButton(
+                        onClick = viewModel::moveSelectedClipLater,
+                        enabled = selectedIndex >= 0 && selectedIndex < project.clips.lastIndex,
+                        modifier = Modifier.weight(1f)
+                    ) { Text("Move later") }
+                }
+
                 if (uiState.activePanel == WorkspaceToolPanel.TRIM) {
                     Spacer(modifier = Modifier.height(8.dp))
                     Row(
@@ -544,6 +562,14 @@ private fun TimelineAndToolsSection(
                             Icon(Icons.Outlined.RestartAlt, contentDescription = null, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(stringResource(R.string.action_reset_trim))
+                        }
+                        TextButton(
+                            onClick = viewModel::splitSelectedClip,
+                            enabled = selected.trimEndMs - selected.trimStartMs >= 1000L
+                        ) {
+                            Icon(Icons.Outlined.ContentCut, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Split")
                         }
                     }
                 } else if (uiState.activePanel == WorkspaceToolPanel.SPEED) {

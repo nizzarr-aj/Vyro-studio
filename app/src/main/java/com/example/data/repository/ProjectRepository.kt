@@ -286,6 +286,48 @@ class ProjectRepository(
         projectDao.touchProject(clip.projectId)
     }
 
+    suspend fun moveClip(projectId: Long, clipId: Long, direction: Int): Boolean = withContext(ioDispatcher) {
+        if (direction != -1 && direction != 1) return@withContext false
+        val moved = projectDao.moveClip(projectId, clipId, direction)
+        if (moved) projectDao.touchProject(projectId)
+        moved
+    }
+
+    suspend fun splitClip(projectId: Long, clipId: Long): Boolean = withContext(ioDispatcher) {
+        val project = projectDao.getProjectOnce(projectId)?.toDomain() ?: return@withContext false
+        val clip = project.clips.firstOrNull { it.id == clipId } ?: return@withContext false
+        val start = clip.trimStartMs.coerceAtLeast(0L)
+        val end = clip.trimEndMs.coerceAtMost(clip.durationMs)
+        val midpoint = start + (end - start) / 2L
+        if (midpoint - start < 500L || end - midpoint < 500L) return@withContext false
+
+        fun entity(id: Long, from: Long, to: Long, order: Int, suffix: String) =
+            TimelineClipEntity(
+                id = id,
+                projectId = clip.projectId,
+                uriString = clip.uriString,
+                displayName = clip.displayName + suffix,
+                isVideo = clip.isVideo,
+                durationMs = clip.durationMs,
+                trimStartMs = from,
+                trimEndMs = to,
+                width = clip.width,
+                height = clip.height,
+                orderIndex = order,
+                playbackSpeed = clip.playbackSpeed
+            )
+
+        projectDao.replaceClipWithSplit(
+            projectId = projectId,
+            originalClipId = clip.id,
+            originalOrderIndex = clip.orderIndex,
+            first = entity(0L, start, midpoint, clip.orderIndex, " (1)"),
+            second = entity(0L, midpoint, end, clip.orderIndex + 1, " (2)")
+        )
+        projectDao.touchProject(projectId)
+        true
+    }
+
     suspend fun removeClip(projectId: Long, clipId: Long) = withContext(ioDispatcher) {
         val before = projectDao.getProjectOnce(projectId)
         val firstClipBefore = before?.clips?.minByOrNull { it.orderIndex }

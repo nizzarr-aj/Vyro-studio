@@ -3,10 +3,13 @@ package com.example.media.engine
 import android.content.Context
 import android.net.Uri
 import androidx.annotation.OptIn
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
+import androidx.media3.common.audio.SpeedProvider
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.effect.Presentation
 import androidx.media3.transformer.Composition
+import androidx.media3.transformer.DefaultEncoderFactory
 import androidx.media3.transformer.EditedMediaItem
 import androidx.media3.transformer.EditedMediaItemSequence
 import androidx.media3.transformer.Effects
@@ -14,6 +17,7 @@ import androidx.media3.transformer.ExportException
 import androidx.media3.transformer.ExportResult
 import androidx.media3.transformer.ProgressHolder
 import androidx.media3.transformer.Transformer
+import androidx.media3.transformer.VideoEncoderSettings
 import com.example.core.model.BitratePreset
 import com.example.core.model.ExportJobState
 import com.example.core.model.ResolutionPreset
@@ -42,6 +46,7 @@ class Media3TransformerExporter(
     val exportState: StateFlow<ExportJobState> = _exportState.asStateFlow()
 
     private var activeTransformer: Transformer? = null
+    private var activeOutputFile: File? = null
     private var progressJob: Job? = null
 
     fun startExport(
@@ -66,10 +71,32 @@ class Media3TransformerExporter(
             .ifEmpty { "VYRO" }
         val outputFile = File(exportDir, "${safeTitle}_$stamp.mp4")
         if (outputFile.exists()) outputFile.delete()
+        activeOutputFile = outputFile
 
         val startedAt = System.currentTimeMillis()
+        // Export to the project's selected canvas instead of merely setting a
+        // height (which previously preserved each source clip's original ratio).
+        // Keep both dimensions even for encoder compatibility.
+        val canvasRatio = project.aspectRatio.floatRatio
+        val canvasWidth = if (canvasRatio >= 1f) {
+            resolution.shortEdge * canvasRatio
+        } else {
+            resolution.shortEdge.toFloat()
+        }.toInt().let { it - (it % 2) }.coerceAtLeast(2)
+        val canvasHeight = if (canvasRatio >= 1f) {
+            resolution.shortEdge.toFloat()
+        } else {
+            resolution.shortEdge / canvasRatio
+        }.toInt().let { it - (it % 2) }.coerceAtLeast(2)
+
         val videoEffects = Media3EffectMapper.toMedia3Effects(project.appliedEffects) +
-            listOf(Presentation.createForHeight(resolution.shortEdge))
+            listOf(
+                Presentation.createForWidthAndHeight(
+                    canvasWidth,
+                    canvasHeight,
+                    Presentation.LAYOUT_SCALE_TO_FIT_WITH_CROP
+                )
+            )
 
         val editedItems = project.clips.map { clip ->
             val mediaItemBuilder = MediaItem.Builder()
@@ -86,22 +113,44 @@ class Media3TransformerExporter(
                 mediaItemBuilder.setImageDurationMs(clip.effectiveDurationMs.coerceAtLeast(1000L))
             }
 
-            EditedMediaItem.Builder(mediaItemBuilder.build())
+            val itemBuilder = EditedMediaItem.Builder(mediaItemBuilder.build())
                 .setRemoveAudio(!includeAudio || project.isMuted || !clip.isVideo)
                 .setFrameRate(fps)
                 .setEffects(Effects(emptyList(), videoEffects))
-                .build()
+
+            // Apply the same speed to both video timestamps and audio samples so the
+            // exported result matches the speed shown in the editor preview.
+            if (clip.isVideo && clip.playbackSpeed != 1.0f) {
+                val speed = clip.playbackSpeed.coerceIn(0.25f, 4.0f)
+                itemBuilder.setSpeed(object : SpeedProvider {
+                    override fun getSpeed(timeUs: Long): Float = speed
+                    override fun getNextSpeedChangeTimeUs(timeUs: Long): Long = C.TIME_UNSET
+                })
+            }
+            itemBuilder.build()
         }
 
         val sequence = EditedMediaItemSequence.withAudioAndVideoFrom(editedItems)
         val composition = Composition.Builder(sequence).build()
 
+        val encoderFactory = DefaultEncoderFactory.Builder(context.applicationContext)
+            .setRequestedVideoEncoderSettings(
+                VideoEncoderSettings.Builder()
+                    .setBitrate((bitrate.mbps * 1_000_000).coerceAtLeast(1_000_000))
+                    .build()
+            )
+            .setEnableFallback(true)
+            .build()
+
         val transformer = Transformer.Builder(context.applicationContext)
+            .setEncoderFactory(encoderFactory)
             .setVideoMimeType(codec.mimeType)
             .addListener(object : Transformer.Listener {
                 override fun onCompleted(composition: Composition, exportResult: ExportResult) {
                     progressJob?.cancel()
                     val size = if (outputFile.exists()) outputFile.length() else 0L
+                    activeOutputFile = null
+                    activeTransformer = null
                     _exportState.value = ExportJobState.Completed(
                         outputPath = outputFile.absolutePath,
                         sizeBytes = size
@@ -114,6 +163,9 @@ class Media3TransformerExporter(
                     exportException: ExportException
                 ) {
                     progressJob?.cancel()
+                    outputFile.delete()
+                    activeOutputFile = null
+                    activeTransformer = null
                     _exportState.value = ExportJobState.Failed(
                         exportException.localizedMessage ?: "Media3 Transformer export failed."
                     )
@@ -129,6 +181,9 @@ class Media3TransformerExporter(
                 transformer.start(composition, outputFile.absolutePath)
                 startProgressPolling(transformer, startedAt)
             } catch (t: Throwable) {
+                outputFile.delete()
+                activeOutputFile = null
+                activeTransformer = null
                 _exportState.value = ExportJobState.Failed(
                     t.localizedMessage ?: "Unable to start Media3 Transformer."
                 )
@@ -166,6 +221,10 @@ class Media3TransformerExporter(
         } catch (_: Exception) {
         }
         activeTransformer = null
+        activeOutputFile?.let { partial ->
+            if (partial.exists()) partial.delete()
+        }
+        activeOutputFile = null
         if (_exportState.value is ExportJobState.Exporting || _exportState.value is ExportJobState.Preparing) {
             _exportState.value = ExportJobState.Idle
         }

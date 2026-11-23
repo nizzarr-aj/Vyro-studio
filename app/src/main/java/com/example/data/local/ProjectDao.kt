@@ -96,6 +96,42 @@ interface ProjectDao {
     @Query("DELETE FROM timeline_clips WHERE id = :clipId")
     suspend fun deleteClipById(clipId: Long)
 
+    @Query("UPDATE timeline_clips SET orderIndex = orderIndex + 1 WHERE projectId = :projectId AND orderIndex > :orderIndex")
+    suspend fun shiftClipsAfter(projectId: Long, orderIndex: Int)
+
+    @Transaction
+    suspend fun replaceClipWithSplit(
+        projectId: Long,
+        originalClipId: Long,
+        originalOrderIndex: Int,
+        first: TimelineClipEntity,
+        second: TimelineClipEntity
+    ) {
+        shiftClipsAfter(projectId, originalOrderIndex)
+        deleteClipById(originalClipId)
+        insertClips(listOf(first, second))
+    }
+
+    @Query("SELECT * FROM timeline_clips WHERE projectId = :projectId ORDER BY orderIndex ASC")
+    suspend fun getClipsForProject(projectId: Long): List<TimelineClipEntity>
+
+    @Query("UPDATE timeline_clips SET orderIndex = :orderIndex WHERE id = :clipId")
+    suspend fun updateClipOrder(clipId: Long, orderIndex: Int)
+
+    @Transaction
+    suspend fun moveClip(projectId: Long, clipId: Long, direction: Int): Boolean {
+        val clips = getClipsForProject(projectId)
+        val currentIndex = clips.indexOfFirst { it.id == clipId }
+        val targetIndex = currentIndex + direction
+        if (currentIndex < 0 || targetIndex !in clips.indices) return false
+        val current = clips[currentIndex]
+        val target = clips[targetIndex]
+        updateClipOrder(current.id, -1)
+        updateClipOrder(target.id, current.orderIndex)
+        updateClipOrder(current.id, target.orderIndex)
+        return true
+    }
+
     @Query("SELECT COALESCE(MAX(orderIndex), -1) FROM timeline_clips WHERE projectId = :projectId")
     suspend fun getMaxClipOrder(projectId: Long): Int
 

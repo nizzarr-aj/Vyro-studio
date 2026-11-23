@@ -142,6 +142,31 @@ class WorkspaceViewModel(
         }
     }
 
+    fun moveSelectedClipEarlier() {
+        val clip = uiState.value.selectedClip ?: return
+        viewModelScope.launch {
+            projectRepository.moveClip(projectId, clip.id, -1)
+        }
+    }
+
+    fun moveSelectedClipLater() {
+        val clip = uiState.value.selectedClip ?: return
+        viewModelScope.launch {
+            projectRepository.moveClip(projectId, clip.id, 1)
+        }
+    }
+
+    fun splitSelectedClip() {
+        val project = uiState.value.project ?: return
+        val clip = uiState.value.selectedClip ?: return
+        viewModelScope.launch {
+            val didSplit = projectRepository.splitClip(project.id, clip.id)
+            if (didSplit) {
+                activePanelFlow.value = WorkspaceToolPanel.NONE
+            }
+        }
+    }
+
     fun removeSelectedClip() {
         val project = uiState.value.project ?: return
         val clip = uiState.value.selectedClip ?: return
