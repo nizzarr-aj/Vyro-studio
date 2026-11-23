@@ -46,6 +46,7 @@ class Media3TransformerExporter(
     val exportState: StateFlow<ExportJobState> = _exportState.asStateFlow()
 
     private var activeTransformer: Transformer? = null
+    private var activeOutputFile: File? = null
     private var progressJob: Job? = null
 
     fun startExport(
@@ -70,6 +71,7 @@ class Media3TransformerExporter(
             .ifEmpty { "VYRO" }
         val outputFile = File(exportDir, "${safeTitle}_$stamp.mp4")
         if (outputFile.exists()) outputFile.delete()
+        activeOutputFile = outputFile
 
         val startedAt = System.currentTimeMillis()
         // Export to the project's selected canvas instead of merely setting a
@@ -147,6 +149,8 @@ class Media3TransformerExporter(
                 override fun onCompleted(composition: Composition, exportResult: ExportResult) {
                     progressJob?.cancel()
                     val size = if (outputFile.exists()) outputFile.length() else 0L
+                    activeOutputFile = null
+                    activeTransformer = null
                     _exportState.value = ExportJobState.Completed(
                         outputPath = outputFile.absolutePath,
                         sizeBytes = size
@@ -159,6 +163,9 @@ class Media3TransformerExporter(
                     exportException: ExportException
                 ) {
                     progressJob?.cancel()
+                    outputFile.delete()
+                    activeOutputFile = null
+                    activeTransformer = null
                     _exportState.value = ExportJobState.Failed(
                         exportException.localizedMessage ?: "Media3 Transformer export failed."
                     )
@@ -174,6 +181,9 @@ class Media3TransformerExporter(
                 transformer.start(composition, outputFile.absolutePath)
                 startProgressPolling(transformer, startedAt)
             } catch (t: Throwable) {
+                outputFile.delete()
+                activeOutputFile = null
+                activeTransformer = null
                 _exportState.value = ExportJobState.Failed(
                     t.localizedMessage ?: "Unable to start Media3 Transformer."
                 )
@@ -211,6 +221,10 @@ class Media3TransformerExporter(
         } catch (_: Exception) {
         }
         activeTransformer = null
+        activeOutputFile?.let { partial ->
+            if (partial.exists()) partial.delete()
+        }
+        activeOutputFile = null
         if (_exportState.value is ExportJobState.Exporting || _exportState.value is ExportJobState.Preparing) {
             _exportState.value = ExportJobState.Idle
         }
