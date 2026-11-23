@@ -72,8 +72,29 @@ class Media3TransformerExporter(
         if (outputFile.exists()) outputFile.delete()
 
         val startedAt = System.currentTimeMillis()
+        // Export to the project's selected canvas instead of merely setting a
+        // height (which previously preserved each source clip's original ratio).
+        // Keep both dimensions even for encoder compatibility.
+        val canvasRatio = project.aspectRatio.floatRatio
+        val canvasWidth = if (canvasRatio >= 1f) {
+            resolution.shortEdge * canvasRatio
+        } else {
+            resolution.shortEdge.toFloat()
+        }.toInt().let { it - (it % 2) }.coerceAtLeast(2)
+        val canvasHeight = if (canvasRatio >= 1f) {
+            resolution.shortEdge.toFloat()
+        } else {
+            resolution.shortEdge / canvasRatio
+        }.toInt().let { it - (it % 2) }.coerceAtLeast(2)
+
         val videoEffects = Media3EffectMapper.toMedia3Effects(project.appliedEffects) +
-            listOf(Presentation.createForHeight(resolution.shortEdge))
+            listOf(
+                Presentation.createForWidthAndHeight(
+                    canvasWidth,
+                    canvasHeight,
+                    Presentation.LAYOUT_SCALE_TO_FIT_WITH_CROP
+                )
+            )
 
         val editedItems = project.clips.map { clip ->
             val mediaItemBuilder = MediaItem.Builder()
