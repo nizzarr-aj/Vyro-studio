@@ -49,6 +49,14 @@ class Media3PreviewController(
         }
 
         override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+            // Each timeline clip can have its own playback speed. ExoPlayer keeps
+            // PlaybackParameters globally, so update it whenever the active item changes.
+            val index = player.currentMediaItemIndex
+            currentClips.getOrNull(index)?.let { clip ->
+                player.playbackParameters = PlaybackParameters(
+                    clip.playbackSpeed.coerceIn(0.25f, 4.0f)
+                )
+            }
             syncPositionNow()
         }
 
